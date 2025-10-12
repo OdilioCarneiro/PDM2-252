@@ -1,1 +1,2 @@
-"# avaliaá∆o 5" 
+Seguir o prompt definido em https://github.com/ricdtaveira/mobdev-parte-01/blob/master/00-prompt/iot
+para criar as aplica√ß√µes dart que funcionar√£o em terminais diferentes. Evidenciar a atividade postando no github os dois projetos na pasta atividade-03 e o print dos dois terminais.
