@@ -1,47 +1,64 @@
 import 'dart:io';
 import 'dart:async';
-import 'dart:math';  // Para Random
+import 'dart:math';  
 
 void main() async {
   const String host = 'localhost';
   const int port = 8080;
-  const Duration interval = Duration(seconds: 10);  // A cada 10 segundos
-  const Duration totalDuration = Duration(seconds: 60);  // Simula por 1 minuto (ajuste se quiser infinito)
+  const Duration interval = Duration(seconds: 10);  
+  const Duration totalDuration = Duration(seconds: 60);  
 
   print('Iniciando simulação de dispositivo IoT...');
 
+  String? localIP;  
+
   try {
-    // Conecta ao servidor assincronamente
+    var interfaces = await NetworkInterface.list();  
+    for (var interface in interfaces) {
+      for (var addr in interface.addresses) {
+        if (addr.type == InternetAddressType.IPv4 && !addr.isLoopback) {
+          localIP = addr.address;  
+          break;
+        }
+      }
+      if (localIP != null) break;
+    }
+
+    if (localIP == null) {
+      localIP = 'IP desconhecido';  
+      print('Não foi possível obter o IP local. Usando: $localIP');
+    } else {
+      print('IP local do dispositivo: $localIP');
+    }
+
+
     final socket = await Socket.connect(host, port);
     print('Conectado ao servidor em $host:$port');
 
     final random = Random();
     Timer? timer;
 
-    // Função para gerar e enviar temperatura
     void sendTemperature() {
-      final double temperature = 20.0 + random.nextDouble() * 10.0;  // Aleatória entre 20.0 e 30.0°C
-      final String message = 'Temperatura: ${temperature.toStringAsFixed(1)}°C\n';
+      final double temperature = 20.0 + random.nextDouble() * 10.0;  
+      final String message = 'Temperatura: ${temperature.toStringAsFixed(1)}°C from IP: $localIP\n';  
       
-      socket.write(message);  // Envia string como bytes
-      socket.flush();  // Garante envio imediato
+      socket.write(message);  
+      socket.flush(); 
       print('Enviando: $message');
     }
 
-    // Inicia o timer periódico assíncrono
     timer = Timer.periodic(interval, (Timer t) {
       sendTemperature();
     });
 
-    // Envia a primeira leitura imediatamente
     sendTemperature();
 
-    // Simula por um tempo finito (remova para infinito)
+
     await Future.delayed(totalDuration);
     timer.cancel();
     print('Simulação finalizada após ${totalDuration.inSeconds} segundos.');
 
-    // Fecha a conexão
+  
     socket.destroy();
     print('Conexão fechada.');
 
