@@ -1,27 +1,28 @@
 import 'dart:io';
-import 'dart:convert';  // Para utf8.decode()
+import 'dart:convert';  
 
 void main() async {
   const int port = 8080;
-  const String host = 'localhost';  // Para escuta local
+  const String host = 'localhost';  
 
   print('Iniciando servidor na porta $port...');
 
   try {
-    // Cria o ServerSocket assíncrono
+
     final server = await ServerSocket.bind(host, port);
     print('Servidor escutando em $host:$port');
 
-    // Escuta conexões indefinidamente
-    await for (final socket in server) {
-      print('Cliente conectado: ${socket.remoteAddress.address}:${socket.remotePort}');
 
-      // Escuta dados assincronamente do socket
+    await for (final socket in server) {
+      final String clientIP = socket.remoteAddress.address;  
+      print('Cliente conectado: $clientIP:${socket.remotePort}');
+
+      
       socket.listen(
         (List<int> data) {
-          final message = utf8.decode(data).trim();  // Decodifica bytes para string
+          final message = utf8.decode(data).trim();  
           if (message.isNotEmpty) {
-            print('Temperatura recebida: $message');
+            print('Temperatura recebida de $clientIP: $message');  
           }
         },
         onError: (error) {
