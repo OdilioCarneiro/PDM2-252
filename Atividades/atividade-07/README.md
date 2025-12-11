@@ -1,1 +1,3 @@
-"# avaliaá∆o 7" 
+Executar o Codelab Anexo. Mostrar a sua implementa√ß√£o no desktop.
+Evidenciar o c√≥digo no Github.
+Postar o link do Github no Google Classroom.
